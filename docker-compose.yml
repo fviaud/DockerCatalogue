@@ -1,0 +1,52 @@
+version: '2'
+
+services:
+
+  code:
+    build:
+      context: code
+    container_name: code
+    volumes:
+      - /c/Users/fviaud/MesProjets/Symfony/:/app
+    
+  nginx:
+    build:
+      context: nginx
+    container_name: nginx
+    depends_on:
+      - php
+    ports:
+      - 80:80
+    volumes_from:
+      - code
+    links:
+    - php:php
+    - phpmyadmin:phpmyadmin
+
+  php:
+    build:
+      context: php
+    container_name: php
+    volumes_from:
+      - code
+
+  mysql:
+    image: mysql
+    container_name: db
+    ports:
+    - 3306:3306
+    volumes:
+      - /var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=fred
+      
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    ports:
+      - 8080:80
+    links:
+      - mysql:db
+
+      
+    
